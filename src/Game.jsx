@@ -1,6 +1,7 @@
 import { RiCrosshair2Line } from "react-icons/ri";
 import picture from "./assets/wheres-waldo.jpeg";
 import { useState } from "react";
+import gameData from "./gameData";
 
 function Game() {
     const [coords, setCoords] = useState({ x: 0, y: 0 });
@@ -16,6 +17,9 @@ function Game() {
         const { pageX, pageY } = e;
         console.log("X: ", pageX, "Y: ", pageY);
 
+        const rect = e.currentTarget.getBoundingClientRect();
+        console.log("userDimensionX: ", rect.width, "userDimensionY: ", rect.height);
+
         setCoords({
             x: pageX,
             y: pageY
@@ -23,6 +27,17 @@ function Game() {
 
     }
 
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const coordsX = coords.x - gameData.extraMargins.marginX;
+        const coordsY = coords.y - gameData.extraMargins.marginY;
+        console.log("submitX: ", coordsX, "sumbitY: ", coordsY);
+
+        setIsCrosshairActive(false);
+
+        // write the fetch function below
+    }
 
 
     return (
@@ -38,9 +53,11 @@ function Game() {
             </div>
 
             {isCrosshairActive && 
-                <div 
+                <form 
                     className="targetSelection"
                     onMouseLeave={handleMouseLeave}
+                    method="POST"
+                    onSubmit={handleSubmit}
                 >
                     <RiCrosshair2Line 
                         size="40px"
@@ -65,7 +82,7 @@ function Game() {
                         <button>Odlaw</button>
                         <button>Wizard</button>
                     </ul>
-                </div>
+                </form>
                 
             }
             
