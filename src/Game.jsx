@@ -5,7 +5,10 @@ import gameData from "./gameData";
 
 function Game() {
     const [coords, setCoords] = useState({ x: 0, y: 0 });
+    const [userDimension, setUserDimension] = useState({ width: 0, height: 0 });
     const [isCrosshairActive, setIsCrosshairActive] = useState(false);
+    const [error, setError] = useState(null);
+    const [verifying, setVerifying] = useState(false);
 
     const handleMouseLeave = () => {
         setIsCrosshairActive(false);
@@ -19,6 +22,12 @@ function Game() {
 
         const rect = e.currentTarget.getBoundingClientRect();
         console.log("userDimensionX: ", rect.width, "userDimensionY: ", rect.height);
+
+        setUserDimension({
+            width: rect.width,
+            height: rect.height
+        })
+        console.log("userClientX: ", userDimension.width, "userClientY: ", userDimension.height);
 
         setCoords({
             x: pageX,
@@ -35,14 +44,46 @@ function Game() {
         console.log("submitX: ", coordsX, "sumbitY: ", coordsY);
 
         setIsCrosshairActive(false);
+        setVerifying(true);
 
-        // write the fetch function below
+        try {
+            const response = await fetch(
+                    `http://localhost:3000/game`, 
+                {
+                    mode: "cors",
+                    method: "POST",
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                    },
+                    body: JSON.stringify({
+                        coordsX,
+                        coordsY,
+                        userClientX: userDimension.width,
+                        userClientY: userDimension.height,
+                        naturalDimensionX: gameData.naturalDimension.width,
+                        naturalDimensionY: gameData.naturalDimension.height,
+                    }),
+                },
+            );
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.log(error);
+            setError(error, error.message);
+        } finally {
+            setVerifying(false);
+        }
+
     }
 
+    if (error) return <p>{error}</p>;
 
     return (
         <>
-            <h1>Can you find Waldo?</h1>
+            <h1>
+                Can you find Waldo?
+                {verifying && <span>Verifying...</span>}
+            </h1>
             <div style={{ position: "relative" }}>
                 <img 
                     src={picture} 
@@ -78,9 +119,9 @@ function Game() {
                             flexDirection: "column",
                         }}
                     >
-                        <button>Waldo</button>
-                        <button>Odlaw</button>
-                        <button>Wizard</button>
+                        <input type="submit" value="Waldo" />
+                        <input type="submit" value="Odlaw" />
+                        <input type="submit" value="Wizard" />
                     </ul>
                 </form>
                 
