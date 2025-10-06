@@ -2,11 +2,15 @@ import { RiCrosshair2Line } from "react-icons/ri";
 import picture from "./assets/wheres-waldo.jpeg";
 import { useState } from "react";
 import gameData from "./gameData";
+import Nav from "./Nav";
 
 function Game() {
     const [coords, setCoords] = useState({ x: 0, y: 0 });
     const [userDimension, setUserDimension] = useState({ width: 0, height: 0 });
     const [isCrosshairActive, setIsCrosshairActive] = useState(false);
+    const [isWaldoFound, setIsWaldoFound] = useState(false);
+    const [isOdlawFound, setIsOdlawFound] = useState(false);
+    const [isWizardFound, setIsWizardFound] = useState(false);
     const [error, setError] = useState(null);
     const [verifying, setVerifying] = useState(false);
 
@@ -80,10 +84,9 @@ function Game() {
 
     return (
         <>
-            <h1>
-                Can you find Waldo?
-                {verifying && <span>Verifying...</span>}
-            </h1>
+            {verifying && <p>Verifying...</p>}
+
+            <Nav isWizardFound={isWizardFound} isWaldoFound={isWaldoFound} isOdlawFound={isOdlawFound} />
             <div style={{ position: "relative" }}>
                 <img 
                     src={picture} 
