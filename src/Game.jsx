@@ -11,6 +11,7 @@ function Game() {
     const [isWaldoFound, setIsWaldoFound] = useState(false);
     const [isOdlawFound, setIsOdlawFound] = useState(false);
     const [isWizardFound, setIsWizardFound] = useState(false);
+    const [validateFor, setValidateFor] = useState(null);
     const [error, setError] = useState(null);
     const [verifying, setVerifying] = useState(false);
 
@@ -41,8 +42,9 @@ function Game() {
     }
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e, validateFor) => {
         e.preventDefault();
+        console.log("validateFor: ", validateFor);
         const coordsX = coords.x - gameData.extraMargins.marginX;
         const coordsY = coords.y - gameData.extraMargins.marginY;
         console.log("submitX: ", coordsX, "sumbitY: ", coordsY);
@@ -52,7 +54,7 @@ function Game() {
 
         try {
             const response = await fetch(
-                    `http://localhost:3000/game`, 
+                    `http://localhost:3000/game/${validateFor}`, 
                 {
                     mode: "cors",
                     method: "POST",
@@ -71,6 +73,14 @@ function Game() {
             );
             const data = await response.json();
             console.log(data);
+            if (data.message === "Correct") {
+                if (validateFor === "waldo") {
+                    setIsWaldoFound(true);
+                } else if (validateFor === "odlaw") {
+                    setIsOdlawFound(true);
+                } else if (validateFor === "wizard")
+                    setIsWizardFound(true);
+            }
         } catch (error) {
             console.log(error);
             setError(error, error.message);
@@ -101,7 +111,7 @@ function Game() {
                     className="targetSelection"
                     onMouseLeave={handleMouseLeave}
                     method="POST"
-                    onSubmit={handleSubmit}
+                    onSubmit={(e) => handleSubmit(e, validateFor)}
                 >
                     <RiCrosshair2Line 
                         size="40px"
@@ -122,9 +132,9 @@ function Game() {
                             flexDirection: "column",
                         }}
                     >
-                        <input type="submit" value="Waldo" />
-                        <input type="submit" value="Odlaw" />
-                        <input type="submit" value="Wizard" />
+                        {!isWaldoFound && <input type="submit" value="Waldo" onClick={() => setValidateFor("waldo")}/>}
+                        {!isOdlawFound && <input type="submit" value="Odlaw" onClick={() => setValidateFor("odlaw")}/>}
+                        {!isWizardFound && <input type="submit" value="Wizard" onClick={() => setValidateFor("wizard")}/>}
                     </ul>
                 </form>
                 
