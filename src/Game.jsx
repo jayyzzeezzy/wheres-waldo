@@ -12,6 +12,7 @@ function Game() {
     const [isOdlawFound, setIsOdlawFound] = useState(false);
     const [isWizardFound, setIsWizardFound] = useState(false);
     const [validateFor, setValidateFor] = useState(null);
+    const [gameOver, setGameOver] = useState(false);
     const [error, setError] = useState(null);
     const [verifying, setVerifying] = useState(false);
 
@@ -73,6 +74,8 @@ function Game() {
             );
             const data = await response.json();
             console.log(data);
+
+            // do this if user guess correctly
             if (data.message === "Correct") {
                 if (validateFor === "waldo") {
                     setIsWaldoFound(true);
@@ -80,6 +83,25 @@ function Game() {
                     setIsOdlawFound(true);
                 } else if (validateFor === "wizard")
                     setIsWizardFound(true);
+            }
+
+            // do this if user guess all characters correctly
+            if (isWaldoFound && isOdlawFound && isWaldoFound) {
+                setGameOver(true);
+                try {
+                    const response = await fetch(
+                            `http://localhost:3000/gameover`, 
+                        {
+                            mode: "cors",
+                            method: "GET",
+                        },
+                    );
+                    const data = await response.json();
+                    console.log("endtime: ", data);
+                } catch (error) {
+                    console.log(error);
+                    setError(error, error.message);
+                }
             }
         } catch (error) {
             console.log(error);
