@@ -1,8 +1,11 @@
 import { RiCrosshair2Line } from "react-icons/ri";
-import picture from "./assets/wheres-waldo.jpeg";
 import { useState } from "react";
 import gameData from "./gameData";
 import Nav from "./Nav";
+import Modal from "./Modal";
+import { createPortal } from "react-dom";
+
+const picture = gameData.url;
 
 function Game() {
     const [coords, setCoords] = useState({ x: 0, y: 0 });
@@ -14,7 +17,16 @@ function Game() {
     const [validateFor, setValidateFor] = useState(null);
     const [gameOver, setGameOver] = useState(false);
     const [error, setError] = useState(null);
-    const [verifying, setVerifying] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [score, setScore] = useState(0);
+
+    const onCancel = () => {
+        setIsModalOpen(false);
+    }
+
+    const onClose = () => {
+        setIsModalOpen(false);
+    }
 
     const handleMouseLeave = () => {
         setIsCrosshairActive(false);
@@ -51,7 +63,6 @@ function Game() {
         console.log("submitX: ", coordsX, "sumbitY: ", coordsY);
 
         setIsCrosshairActive(false);
-        setVerifying(true);
 
         try {
             const response = await fetch(
@@ -97,7 +108,9 @@ function Game() {
                         },
                     );
                     const data = await response.json();
-                    console.log("endtime: ", data);
+                    console.log("timeTaken: ", data.timeTaken);
+                    setScore(data.timeTaken);
+                    setIsModalOpen(true);
                 } catch (error) {
                     console.log(error);
                     setError(error, error.message);
@@ -106,18 +119,13 @@ function Game() {
         } catch (error) {
             console.log(error);
             setError(error, error.message);
-        } finally {
-            setVerifying(false);
         }
-
     }
 
     if (error) return <p>{error}</p>;
 
     return (
         <>
-            {verifying && <p>Verifying...</p>}
-
             <Nav isWizardFound={isWizardFound} isWaldoFound={isWaldoFound} isOdlawFound={isOdlawFound} />
             <div style={{ position: "relative" }}>
                 <img 
@@ -161,6 +169,15 @@ function Game() {
                 </form>
                 
             }
+            
+            {isModalOpen && (
+                createPortal(
+                    <Modal onCancel={onCancel} onClose={onClose}>
+                        <h3>You finished in {score} seconds</h3>
+                    </Modal>, 
+                    document.body
+                )
+            )}
             
         </>
     )
