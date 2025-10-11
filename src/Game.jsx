@@ -1,5 +1,5 @@
 import { RiCrosshair2Line } from "react-icons/ri";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import gameData from "./gameData";
 import Nav from "./Nav";
 import Modal from "./Modal";
@@ -15,6 +15,7 @@ function Game() {
     const [isOdlawFound, setIsOdlawFound] = useState(false);
     const [isWizardFound, setIsWizardFound] = useState(false);
     const [validateFor, setValidateFor] = useState(null);
+    // eslint-disable-next-line no-unused-vars
     const [gameOver, setGameOver] = useState(false);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,6 +32,31 @@ function Game() {
     const handleMouseLeave = () => {
         setIsCrosshairActive(false);
     }
+
+    useEffect(() => {
+        const startGame = async () => {
+            try {
+                const response = await fetch(
+                    `http://localhost:3000/game`,
+                    {
+                        mode: "cors",
+                        method: "GET",
+                    },
+                );
+                const data = await response.json();
+                console.log(data);
+
+                if (response.status >= 400) {
+                    setError(response.status);
+                    throw new Error(response.status, "Server error");
+                }
+            } catch (error) {
+                setError(error, error.message);
+            }
+        }
+
+        startGame();
+    }, []);
 
     const handleClick = (e) => {
         setIsCrosshairActive(true);

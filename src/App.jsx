@@ -1,11 +1,11 @@
-import Game from "./Game.jsx";
+import { Outlet } from 'react-router'
 import './App.css'
 
 function App() {
 
   return (
     <>
-      <Game />
+      <Outlet />
     </>
   )
 }
