@@ -126,7 +126,7 @@ function Game() {
             }
 
             // do this if user guess all characters correctly
-            if (isWaldoFound && isOdlawFound && isWaldoFound) {
+            if (isWaldoFound && isOdlawFound && isWizardFound) {
                 setGameOver(true);
                 try {
                     const response = await fetch(
