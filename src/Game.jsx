@@ -114,12 +114,15 @@ function Game() {
 
             // do this if user guess correctly
             if (data.message === "Correct") {
+                alert("That's correct!")
                 if (validateFor === "waldo") {
                     setIsWaldoFound(true);
                 } else if (validateFor === "odlaw") {
                     setIsOdlawFound(true);
                 } else if (validateFor === "wizard")
                     setIsWizardFound(true);
+            } else {
+                alert("Incorrect. Take another guess :)")
             }
 
             // do this if user guess all characters correctly
@@ -135,7 +138,12 @@ function Game() {
                     );
                     const data = await response.json();
                     console.log("timeTaken: ", data.timeTaken);
-                    setScore(data.timeTaken);
+
+                    // format time
+                    const m = new Date(data.timeTaken).getMinutes();
+                    const s = new Date(data.timeTaken).getSeconds();
+                    const ms = new Date(data.timeTaken).getMilliseconds();
+                    setScore(`${m}:${s}:${ms}`);
                     setIsModalOpen(true);
                 } catch (error) {
                     console.log(error);
