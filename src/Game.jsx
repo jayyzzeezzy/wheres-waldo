@@ -33,6 +33,15 @@ function Game() {
         setIsCrosshairActive(false);
     }
 
+    // format time
+    const addZero = (x, n) => {
+        while (x.toString().length < n) {
+            x = "0" + x;
+            return x;
+        }
+        return x;
+    };
+
     useEffect(() => {
         const startGame = async () => {
             try {
@@ -74,10 +83,14 @@ function Game() {
                     console.log("timeTaken: ", data.timeTaken);
 
                     // format end time
-                    const m = new Date(data.timeTaken).getMinutes();
-                    const s = new Date(data.timeTaken).getSeconds();
-                    const ms = new Date(data.timeTaken).getMilliseconds();
+                    let m = new Date(data.timeTaken).getMinutes();
+                    m = addZero(m, 2);
+                    let s = new Date(data.timeTaken).getSeconds();
+                    s = addZero(s, 2);
+                    let ms = new Date(data.timeTaken).getMilliseconds();
+                    ms = addZero(ms, 3);
                     setScore(`${m}:${s}:${ms}`);
+
                     setIsModalOpen(true);
                 } catch (error) {
                     console.log(error);

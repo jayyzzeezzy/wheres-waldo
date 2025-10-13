@@ -1,13 +1,34 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 function Modal({ onCancel, onClose, children }) {
     const [username, setUsername] = useState("");
+    const navigate = useNavigate();
 
-    // Incomplete. Write a fetch request.
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(username);
-        onClose();
+
+        try {
+            const response = await fetch(
+                    `http://localhost:3000/leader`, 
+                {
+                    mode: "cors",
+                    method: "POST",
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                    },
+                    body: JSON.stringify({ username }),
+                },
+            );            
+            const data = await response.json();
+            const score = data.score;
+            const leaderBoard = data.leaderBoard;
+            navigate("/leaderboard", { state: { score, leaderBoard  } });
+
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
