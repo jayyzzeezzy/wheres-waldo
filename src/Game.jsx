@@ -58,6 +58,37 @@ function Game() {
         startGame();
     }, []);
 
+    useEffect(() => {
+        if (isWaldoFound && isOdlawFound && isWizardFound) {
+            setGameOver(true);
+            const fetchEndTime = async () => {
+                try {
+                    const response = await fetch(
+                            `http://localhost:3000/gameover`, 
+                        {
+                            mode: "cors",
+                            method: "GET",
+                        },
+                    );
+                    const data = await response.json();
+                    console.log("timeTaken: ", data.timeTaken);
+
+                    // format end time
+                    const m = new Date(data.timeTaken).getMinutes();
+                    const s = new Date(data.timeTaken).getSeconds();
+                    const ms = new Date(data.timeTaken).getMilliseconds();
+                    setScore(`${m}:${s}:${ms}`);
+                    setIsModalOpen(true);
+                } catch (error) {
+                    console.log(error);
+                    setError(error, error.message);
+                }
+            }
+
+            fetchEndTime();
+        }
+    }, [isOdlawFound, isWaldoFound, isWizardFound]);
+
     const handleClick = (e) => {
         setIsCrosshairActive(true);
 
@@ -125,31 +156,6 @@ function Game() {
                 alert("Incorrect. Take another guess :)")
             }
 
-            // do this if user guess all characters correctly
-            if (isWaldoFound && isOdlawFound && isWizardFound) {
-                setGameOver(true);
-                try {
-                    const response = await fetch(
-                            `http://localhost:3000/gameover`, 
-                        {
-                            mode: "cors",
-                            method: "GET",
-                        },
-                    );
-                    const data = await response.json();
-                    console.log("timeTaken: ", data.timeTaken);
-
-                    // format time
-                    const m = new Date(data.timeTaken).getMinutes();
-                    const s = new Date(data.timeTaken).getSeconds();
-                    const ms = new Date(data.timeTaken).getMilliseconds();
-                    setScore(`${m}:${s}:${ms}`);
-                    setIsModalOpen(true);
-                } catch (error) {
-                    console.log(error);
-                    setError(error, error.message);
-                }
-            }
         } catch (error) {
             console.log(error);
             setError(error, error.message);
