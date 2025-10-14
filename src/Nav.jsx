@@ -3,14 +3,14 @@ import game from "./gameData";
 function Nav({ isWaldoFound, isWizardFound, isOdlawFound }) {
     return(
         <>
-            <nav>
+            <nav style={{ display:"flex", justifyContent:"center" }}>
                 <div 
                     className="character-container"
                     style={{ display: "flex" }}
                 >
                 <div 
                 className="waldo" 
-                style={{ display: "flex", alignItems: "center", opacity: isWaldoFound ? "0.3" : "1" }}
+                style={{ display: "flex", alignItems: "center", opacity: isWaldoFound ? "0.3" : "1", marginRight:"6px" }}
                 >
                     <img 
                         src={game.characters.waldo.url} 

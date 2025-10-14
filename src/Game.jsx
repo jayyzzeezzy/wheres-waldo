@@ -1,5 +1,5 @@
 import { RiCrosshair2Line } from "react-icons/ri";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import gameData from "./gameData";
 import Nav from "./Nav";
 import Modal from "./Modal";
@@ -20,6 +20,7 @@ function Game() {
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [score, setScore] = useState(0);
+    const endTimeRef = useRef(0);
 
     const onCancel = () => {
         setIsModalOpen(false);
@@ -76,7 +77,11 @@ function Game() {
                             `http://localhost:3000/gameover`, 
                         {
                             mode: "cors",
-                            method: "GET",
+                            method: "POST",
+                            headers: { 
+                                'Content-Type': 'application/json', 
+                            },
+                            body: JSON.stringify({ endTime: endTimeRef.current }),
                         },
                     );
                     const data = await response.json();
@@ -100,9 +105,10 @@ function Game() {
 
             fetchEndTime();
         }
-    }, [isOdlawFound, isWaldoFound, isWizardFound]);
+    }, [isOdlawFound, isWaldoFound, isWizardFound, endTimeRef]);
 
     const handleClick = (e) => {
+        endTimeRef.current = Date.now();
         setIsCrosshairActive(true);
 
         const { pageX, pageY } = e;
