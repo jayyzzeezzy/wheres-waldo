@@ -1,10 +1,53 @@
+import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router";
 
 function LeaderBoard() {
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(null);
+    const [leaderBoard, setLeaderBoard] = useState(null);
+    const [score, setScore] = useState(null);
     const location = useLocation();
     const { state } = location;
-    const score = state.score;
-    const leaderBoard = state.leaderBoard;
+
+    useEffect(() => {
+        const fetchLeaderBoard = async () => {
+            setLoading(true);
+
+            if (state) {
+                setScore(state.score);
+                setLeaderBoard(state.leaderBoard);
+                setLoading(false);
+            } else {
+                try {
+                    const response = await fetch(
+                        `http://localhost:3000/leader`,
+                        {
+                            mode: "cors",
+                            method: "GET",
+                        },
+                    );
+
+                    if (response.status === 404) {
+                        setError(response.statusCode, response.message);
+                        throw new Error(response.statusCode, "Leaderboard not found");
+                    }
+
+                    const data = await response.json();
+                    // console.log(data);
+                    setLeaderBoard(data.leaderBoard);
+
+                } catch (error) {
+                    throw new Error(error.statusCode, error.message);
+                } finally {
+                    setLoading(false);
+                }
+            }
+
+        }
+
+        fetchLeaderBoard();
+    }, [state]);
+
     // console.log(leaderBoard);
 
     // format end time
@@ -26,6 +69,9 @@ function LeaderBoard() {
         return `${m}:${s}:${ms}`;
     };
 
+    if (error) return <p>{error}</p>;
+    if (loading) return <p>Loading...</p>;
+
     return (
         <div 
         style={{
@@ -35,9 +81,14 @@ function LeaderBoard() {
             boxSizing:"border-box"
         }}>
             <div className="container">
-                <div className="playerScore" style={{ textAlign:"center", marginBottom:"20px" }}>
-                    <h2>Your score is</h2>
-                    <h3 style={{ marginBottom:"10px" }}>{formatScore(score)}</h3>
+                {score && (
+                    <div className="playerScore" style={{ textAlign:"center" }}>
+                        <h2>Your score is</h2>
+                        <h3 style={{ marginBottom:"10px" }}>{formatScore(score)}</h3>
+                    </div>
+                )}
+
+                <div className="homeBtn" style={{ display:"flex", justifyContent:"center", marginTop: "10px" }}>
                     <Link to="/"
                     style={{ 
                     textDecoration:"none",
@@ -51,6 +102,7 @@ function LeaderBoard() {
                         Home
                     </Link>
                 </div>
+
                 <div className="leaderboard">
                     <h1>Leader Board</h1>
                     <div style={{ display:"flex", justifyContent:"space-evenly" }}>
