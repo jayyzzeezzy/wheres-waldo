@@ -1,11 +1,11 @@
-import { useLocation } from "react-router";
+import { useLocation, Link } from "react-router";
 
 function LeaderBoard() {
     const location = useLocation();
     const { state } = location;
     const score = state.score;
     const leaderBoard = state.leaderBoard;
-    console.log(leaderBoard);
+    // console.log(leaderBoard);
 
     // format end time
     const addZero = (x, n) => {
@@ -35,20 +35,33 @@ function LeaderBoard() {
             boxSizing:"border-box"
         }}>
             <div className="container">
-                <div className="playerScore">
+                <div className="playerScore" style={{ textAlign:"center", marginBottom:"20px" }}>
                     <h2>Your score is</h2>
-                    <h3>{formatScore(score)}</h3>
+                    <h3 style={{ marginBottom:"10px" }}>{formatScore(score)}</h3>
+                    <Link to="/"
+                    style={{ 
+                    textDecoration:"none",
+                    padding:"4px 10px",
+                    color:"#fff",
+                    backgroundColor:"#1d4ed8",
+                    borderRadius:"5px",
+                    fontSize:"1rem",
+                    fontWeight:"bold",
+                    }}>
+                        Home
+                    </Link>
                 </div>
                 <div className="leaderboard">
                     <h1>Leader Board</h1>
-                    <div>
+                    <div style={{ display:"flex", justifyContent:"space-evenly" }}>
                         <h4>Username</h4>
                         <h4>Score</h4>
                     </div>
                     {leaderBoard && leaderBoard.length > 0 && (
-                        leaderBoard.map((score) => {
+                        leaderBoard.map((score, index) => {
                             return (
-                                <div key={score.id} className="scoreLeader">
+                                <div key={score.id} className="scoreLeader" style={{ display: "flex", justifyContent:"space-between" }}>
+                                    <p>{index + 1}</p>
                                     <p>{score.username}</p>
                                     <p>{formatScore(score)}</p>
                                 </div>
